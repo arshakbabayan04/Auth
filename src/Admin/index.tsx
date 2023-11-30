@@ -6,7 +6,7 @@ export const Admin: FC = React.memo(() => {
 
     return (
         <>
-            <main className="profile-page pt-20">
+            <main className="profile-page pt-20 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
                 <section className="relative block h-500-px">
                     <div
                         className="absolute top-0 w-full h-full bg-center bg-cover"
@@ -77,7 +77,7 @@ export const Admin: FC = React.memo(() => {
                                         <div className="w-full lg:w-9/12 px-4">
                                             <p className="mb-4 text-lg leading-relaxed text-blueGray-700">
                                                 An artist of considerable range,{" "}
-                                                {user.name  } the name taken by
+                                                {user.name} the name taken by
                                                 Melbourne-raised, Brooklyn-based
                                                 Nick Murphy writes, performs and
                                                 records all of his own music,
@@ -101,7 +101,7 @@ export const Admin: FC = React.memo(() => {
                         <div className="container mx-auto px-4">
                             <div className="flex flex-wrap items-center md:justify-between justify-center">
                                 <div className="w-full md:w-6/12 px-4 mx-auto text-center">
-                                    <div className="text-sm text-blueGray-500 font-semibold py-1">
+                                    <div className="text-sm text-white font-semibold py-1">
                                         Made with{" "}
                                         <a
                                             href="https://www.creative-tim.com/product/notus-js"

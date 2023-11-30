@@ -1,20 +1,23 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Formik, FieldArray, Form } from "formik";
 import { useAppDispatch } from "../../store/hooks";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 
 const AddTest: FC = React.memo(() => {
+    const [showInput, setShowInput] = useState<boolean>(false);
+
     const initialValues = {
-        questions: [
+        answers: [
             {
-                name: "",
+                answer: "",
             },
             {
-                name: "",
+                answer: "",
             },
         ],
         name: "",
+        questions: [],
     };
 
     const dispatch = useAppDispatch();
@@ -38,14 +41,15 @@ const AddTest: FC = React.memo(() => {
                             const data: any = {
                                 name: values.name,
                                 questions: [],
+                                question: values.questions,
                             };
 
-                            values.questions.forEach((el) => {
-                                data.questions.push(el.name);
+                            values.answers.forEach((el) => {
+                                data.answers.push(el.answer);
                             });
 
                             console.log("data", data);
-
+                            
                             // dispatch(addTest(data))
                             //     .unwrap()
                             //     .then(() =>
@@ -80,7 +84,8 @@ const AddTest: FC = React.memo(() => {
                                         >
                                             Test Name
                                         </label>
-                                        <textarea
+                                        <input
+                                            type="text"
                                             onChange={handleChange}
                                             name="name"
                                             value={values.name}
@@ -95,48 +100,6 @@ const AddTest: FC = React.memo(() => {
                                         )}
                                     </div>
                                 </div>
-                                <FieldArray name="questions">
-                                    {({ push }) => (
-                                        <div className="flex items-center flex-wrap -mx-3 mb-2">
-                                            {values.questions.map((item, i) => {
-                                                if (i > 4) return;
-
-                                                return (
-                                                    <div
-                                                        key={i}
-                                                        className=" w-full md:w-1/2 px-3 mb-6 md:mb-0"
-                                                    >
-                                                        <label
-                                                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                                            htmlFor="questions"
-                                                        >
-                                                            Question {i + 1}
-                                                        </label>
-                                                        <input
-                                                            onChange={
-                                                                handleChange
-                                                            }
-                                                            name={`questions.${i}.name`}
-                                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                                                            id="questions"
-                                                            type="text"
-                                                            placeholder="1"
-                                                        />
-                                                    </div>
-                                                );
-                                            })}
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    push({ name: "" })
-                                                }
-                                                className="h-1/2 ml-3 mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md focus:outline-none focus:shadow-outline"
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                    )}
-                                </FieldArray>
                                 <div className="sm:col-span-3">
                                     <label
                                         htmlFor="category"
@@ -156,12 +119,117 @@ const AddTest: FC = React.memo(() => {
                                         </select>
                                     </div>
                                 </div>
-                                <div className="btns_wrapper flex gap-5">
+
+                                <FieldArray name="questions">
+                                    {({ push }) => (
+                                        <>
+                                            {showInput &&
+                                                values.questions.map(
+                                                    (item, i) => (
+                                                        <>
+                                                            <div className="w-full">
+                                                                <label
+                                                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                                                    htmlFor="question"
+                                                                >
+                                                                    Question
+                                                                </label>
+                                                                <input
+                                                                    onChange={
+                                                                        handleChange
+                                                                    }
+                                                                    name="question"
+                                                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                                                    id="question"
+                                                                    placeholder="Question"
+                                                                />
+                                                            </div>
+                                                            <FieldArray name="answers">
+                                                                {({ push }) => (
+                                                                    <div className="flex items-center flex-wrap -mx-3 mb-2">
+                                                                        {values.answers.map(
+                                                                            (
+                                                                                item,
+                                                                                i
+                                                                            ) => {
+                                                                                if (
+                                                                                    i >
+                                                                                    4
+                                                                                ) {
+                                                                                    return;
+                                                                                }
+                                                                                return (
+                                                                                    <div
+                                                                                        key={
+                                                                                            i
+                                                                                        }
+                                                                                        className=" w-full md:w-1/2 px-3 mb-6 md:mb-0"
+                                                                                    >
+                                                                                        <label
+                                                                                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                                                                            htmlFor="questions"
+                                                                                        >
+                                                                                            Question{" "}
+                                                                                            {i +
+                                                                                                1}
+                                                                                        </label>
+                                                                                        <input
+                                                                                            onChange={
+                                                                                                handleChange
+                                                                                            }
+                                                                                            name={`questions.${i}.name`}
+                                                                                            className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                                                                                            id="questions"
+                                                                                            type="text"
+                                                                                            placeholder="1"
+                                                                                        />
+                                                                                    </div>
+                                                                                );
+                                                                            }
+                                                                        )}
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() =>
+                                                                                push(
+                                                                                    {
+                                                                                        name: "",
+                                                                                    }
+                                                                                )
+                                                                            }
+                                                                            className="h-1/2 ml-3 mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-md focus:outline-none focus:shadow-outline"
+                                                                        >
+                                                                            +
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </FieldArray>
+                                                        </>
+                                                    )
+                                                )}
+                                            <div className="btns_wrapper flex gap-5 mb-5">
+                                                <button
+                                                    onClick={() => {
+                                                        setShowInput(true);
+                                                        push({
+                                                            question: "",
+                                                        });
+                                                    }}
+                                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                                    type="button"
+                                                >
+                                                    Add
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </FieldArray>
+
+                                <div className="btns_wrapper flex gap-5 ml-72">
                                     <button
                                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                         type="submit"
                                     >
-                                        Add
+                                        Add Test
                                     </button>
                                 </div>
                             </Form>
