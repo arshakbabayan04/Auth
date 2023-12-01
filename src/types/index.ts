@@ -5,7 +5,11 @@ export interface Test {
     archive: 1 | 0;
     questions: Question[];
 }
-
+export interface TestForm {
+    name: string;
+    questions: Question[];
+    category: string;
+}
 export interface Category {
     id: number;
     name: string
@@ -18,7 +22,7 @@ export interface Question {
 }
 
 export interface Answer {
-    id: number;
+    id: number | string;
     answer: string;
     status: 1 | 0;
     questionId: number;

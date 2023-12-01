@@ -1,3 +1,4 @@
+import { TestForm } from './../types/index';
 import { User } from '../types/index';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
@@ -41,8 +42,21 @@ export const getTest = createAsyncThunk('user/getTest ', async () => {
     return data;
 })
 
-export const addTest = createAsyncThunk('user/addTest ', async (newData: any) => {
-    const { data } = await axios.post(`http://localhost:5000/test/add`, newData)
+export const addTest = createAsyncThunk('user/addTest ', async (newData: TestForm) => {
+    const { data } = await axios.post(`http://localhost:5000/admin/test/add`, newData, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+    })
     return data;
+})
+
+export const getCategory = createAsyncThunk('user/getCategory ', async () => {
+    const { data } = await axios.get(`http://localhost:5000/test/categories`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+    })
+    return data.categories;
 })
 
