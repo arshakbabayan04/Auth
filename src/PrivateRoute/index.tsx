@@ -17,7 +17,6 @@ const PrivateRoute = () => {
             dispatch(getUser())
                 .unwrap()
                 .then((res) => {
-                    console.log(res);
                     setResponse(true);
                     setType(res.user.type);
                 })

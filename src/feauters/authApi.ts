@@ -60,3 +60,12 @@ export const getCategory = createAsyncThunk('user/getCategory ', async () => {
     return data.categories;
 })
 
+export const getSingleTest = createAsyncThunk('user/getSingleTest', async (id: any) => {
+    const { data } = await axios.get(`http://localhost:5000/test/${id}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+    })
+    return data.test ;
+})
+

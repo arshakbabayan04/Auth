@@ -8,6 +8,7 @@ import PrivateRoute from "../PrivateRoute";
 import SignIn from "../SignIn/SignIn";
 import SignUp from "../SignUp/SignUp";
 import { User } from "../User";
+import StartTest from "../User/StartTest";
 import { UserLayout } from "../User/UserLayout";
 import UserTests from "../User/UserTests";
 
@@ -61,8 +62,13 @@ export const Router = () => {
                             path: "tests",
                             element: <UserTests />,
                         },
+                        {
+                            path: "tests/:id",
+                            element: <StartTest />,
+                        },
                     ],
                 },
+                
             ],
         },
     ]);

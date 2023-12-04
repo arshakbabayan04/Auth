@@ -3,13 +3,10 @@ import { Formik, FieldArray, Form } from "formik";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
-import { Answer, TestForm } from "../../types";
-import { v4 as uuidv4 } from "uuid";
+import { TestForm } from "../../types";
 import { addTest, getCategory } from "../../feauters/authApi";
 
 const AddTest: FC = React.memo(() => {
-    const [trueAnswer, setTrueAnswer] = useState<String | number>();
-
     const initialValues: TestForm = {
         name: "",
         category: "",
@@ -25,7 +22,6 @@ const AddTest: FC = React.memo(() => {
     const { categories } = useAppSelector((state) => state.user);
 
     const submitFunc = (values: TestForm, { resetForm }: any) => {
-        console.log(trueAnswer);
         console.log(values);
 
         dispatch(addTest(values))
@@ -78,7 +74,7 @@ const AddTest: FC = React.memo(() => {
                                     <div className="w-full px-3">
                                         <label
                                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                            htmlFor="question"
+                                            htmlFor="name"
                                         >
                                             Test Name
                                         </label>
@@ -127,102 +123,106 @@ const AddTest: FC = React.memo(() => {
                                         </select>
                                     </div>
                                 </div>
-
                                 <FieldArray name="questions">
-                                    {(data) => {
-                                        // console.log(data);
-
+                                    {(arrayHelpers) => {
                                         return (
                                             <>
                                                 {values.questions.map(
-                                                    (item, i) => (
-                                                        <React.Fragment key={i}>
-                                                            <div className="w-full">
-                                                                <label
-                                                                    className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                                                    htmlFor="question"
-                                                                >
-                                                                    Question
-                                                                </label>
-                                                                <input
-                                                                    onChange={
-                                                                        handleChange
-                                                                    }
-                                                                    name={`questions[${i}].question`}
-                                                                    className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                                                                    id="question"
-                                                                    placeholder="Question"
-                                                                />
-                                                            </div>
+                                                    (question, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="w-full"
+                                                        >
+                                                            <label
+                                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                                                htmlFor={`questions[${i}].question`}
+                                                            >
+                                                                Question
+                                                            </label>
+                                                            <input
+                                                                onChange={
+                                                                    handleChange
+                                                                }
+                                                                name={`questions[${i}].question`}
+                                                                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                                                placeholder="Question"
+                                                            />
                                                             <FieldArray
                                                                 name={`questions[${i}].answers`}
                                                             >
-                                                                {({
-                                                                    form,
-                                                                    push,
-                                                                }) => (
+                                                                {(
+                                                                    answerArrayHelpers
+                                                                ) => (
                                                                     <div className="flex items-center flex-wrap -mx-3 mb-2">
-                                                                        {item.answers &&
-                                                                            item.answers.map(
-                                                                                (
-                                                                                    item1: Answer,
-                                                                                    j
-                                                                                ) => {
-                                                                                    return (
-                                                                                        <div
-                                                                                            onDoubleClick={(
-                                                                                                e: any
-                                                                                            ) => {
-                                                                                                console.log(
-                                                                                                    form
+                                                                        {question.answers.map(
+                                                                            (
+                                                                                answer,
+                                                                                j
+                                                                            ) => (
+                                                                                <div
+                                                                                    key={
+                                                                                        j
+                                                                                    }
+                                                                                    className="w-full md:w-1/2 px-3 mb-6 md:mb-0"
+                                                                                >
+                                                                                    <label
+                                                                                        className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                                                                        htmlFor={`questions[${i}].answers[${j}].answer`}
+                                                                                    >
+                                                                                        {`Answer ${
+                                                                                            j +
+                                                                                            1
+                                                                                        }`}
+                                                                                    </label>
+                                                                                    <input
+                                                                                        onChange={
+                                                                                            handleChange
+                                                                                        }
+                                                                                        name={`questions[${i}].answers[${j}].answer`}
+                                                                                        className={`${
+                                                                                            answer.status
+                                                                                                ? "bg-green-400 focus:bg-green-400"
+                                                                                                : ""
+                                                                                        } appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none`}
+                                                                                        type="text"
+                                                                                        placeholder={`${
+                                                                                            j +
+                                                                                            1
+                                                                                        }`}
+                                                                                        onDoubleClick={() => {
+                                                                                            const newAnswers =
+                                                                                                question.answers.map(
+                                                                                                    (
+                                                                                                        a,
+                                                                                                        index
+                                                                                                    ) => ({
+                                                                                                        ...a,
+                                                                                                        status:
+                                                                                                            index ===
+                                                                                                            j
+                                                                                                                ? 1
+                                                                                                                : 0,
+                                                                                                    })
                                                                                                 );
-
-                                                                                                item1.status = 1;
-                                                                                            }}
-                                                                                            key={
-                                                                                                j
-                                                                                            }
-                                                                                            className=" w-full md:w-1/2 px-3 mb-6 md:mb-0"
-                                                                                        >
-                                                                                            <label
-                                                                                                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                                                                                                htmlFor="questions"
-                                                                                            >
-                                                                                                {"Answer " +
-                                                                                                    (j +
-                                                                                                        1)}
-                                                                                            </label>
-                                                                                            <input
-                                                                                                onChange={
-                                                                                                    handleChange
-                                                                                                }
-                                                                                                name={`questions[${i}].answers[${j}].answer`}
-                                                                                                className={`${
-                                                                                                    item1.status
-                                                                                                        ? "bg-green-400 focus:bg-green-400"
-                                                                                                        : ""
-                                                                                                } appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white`}
-                                                                                                type="text"
-                                                                                                placeholder={
-                                                                                                    j +
-                                                                                                    1 +
-                                                                                                    ""
-                                                                                                }
-                                                                                            />
-                                                                                        </div>
-                                                                                    );
-                                                                                }
-                                                                            )}
+                                                                                            setFieldValue(
+                                                                                                `questions[${i}].answers`,
+                                                                                                newAnswers
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                            )
+                                                                        )}
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => {
                                                                                 if (
-                                                                                    item
+                                                                                    question
                                                                                         .answers
                                                                                         .length <
                                                                                     5
                                                                                 ) {
-                                                                                    push(
+                                                                                    answerArrayHelpers.push(
                                                                                         {
                                                                                             answer: "",
                                                                                             status: 0,
@@ -248,13 +248,13 @@ const AddTest: FC = React.memo(() => {
                                                                     </div>
                                                                 )}
                                                             </FieldArray>
-                                                        </React.Fragment>
+                                                        </div>
                                                     )
                                                 )}
                                                 <div className="btns_wrapper flex gap-5 mb-5">
                                                     <button
                                                         onClick={() => {
-                                                            data.push({
+                                                            arrayHelpers.push({
                                                                 question: "",
                                                                 answers: [
                                                                     {

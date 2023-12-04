@@ -1,5 +1,5 @@
 import { Category } from './../types/index';
-import { getUser, signUp, logOut, getTest, getCategory } from './authApi';
+import { getUser, signUp, logOut, getTest, getCategory, getSingleTest } from './authApi';
 import { Test, User } from '../types/index';
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -7,13 +7,15 @@ interface userState {
     user: User;
     tests: Test[];
     categories: Category[]
+    singleTest: Test
 }
 
 const initialState: userState = {
     user: {} as User,
     tests: [],
-    categories: []
-}
+    categories: [],
+    singleTest: {} as Test
+ }
 
 const userSlice = createSlice({
     name: 'user',
@@ -35,6 +37,9 @@ const userSlice = createSlice({
             })
             .addCase(getCategory.fulfilled, (state, action) => {
                 state.categories = action.payload
+            })
+            .addCase(getSingleTest.fulfilled, (state, action) => {
+                state.singleTest = action.payload
             })
             
     }

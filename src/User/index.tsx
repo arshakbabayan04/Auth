@@ -1,7 +1,9 @@
 import React, { FC } from "react";
 import { Link, Outlet } from "react-router-dom";
+import { useAppSelector } from "../store/hooks";
 
 export const User: FC = React.memo(() => {
+    const { user } = useAppSelector((state) => state.user);
     return (
         <>
             <main className="profile-page pt-20 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
@@ -65,7 +67,7 @@ export const User: FC = React.memo(() => {
                                 </div>
                                 <div className="text-center mt-12">
                                     <h3 className="text-4xl font-semibold leading-normal mb-2 text-blueGray-700 mb-2">
-                                        Jenna Stones
+                                        {user.name} {user.surname}
                                     </h3>
                                     <div className="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
                                         <i className="fas fa-map-marker-alt mr-2 text-lg text-blueGray-400"></i>
