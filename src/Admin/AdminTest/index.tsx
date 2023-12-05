@@ -6,12 +6,11 @@ import AdminTestItem from "../AdminTestItem";
 const AdminTest: FC = React.memo(() => {
     const dispatch = useAppDispatch();
 
+    const { tests } = useAppSelector((state) => state.user);
+
     useEffect(() => {
         dispatch(getTest());
     }, []);
-
-    const { tests } = useAppSelector((state) => state.user);
-
     return (
         <>
             <div

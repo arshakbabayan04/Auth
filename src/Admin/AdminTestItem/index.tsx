@@ -1,11 +1,13 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { CgTrash } from "react-icons/cg";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../store/hooks";
+import { deleteTest, getTest } from "../../feauters/authApi";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
-const AdminTestItem: FC<any> = ({ test, isAdmin }) => {
+const AdminTestItem: FC<any> = React.memo(({ test, isAdmin }) => {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const { tests } = useAppSelector((state) => state.user);
 
@@ -21,7 +23,7 @@ const AdminTestItem: FC<any> = ({ test, isAdmin }) => {
             >
                 <div
                     id="block"
-                    className="flex items-center gap-2 flex-wrap overflow-hidden w-full hover:bg-fuchsia-400 p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow"
+                    className="flex items-center gap-2 flex-wrap cursor-pointer overflow-hidden w-full hover:bg-fuchsia-400 p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 group hover:shadow"
                 >
                     <span className=" flex-1 text-black whitespace-nowrap">
                         {test.name} #{test.id}
@@ -29,10 +31,24 @@ const AdminTestItem: FC<any> = ({ test, isAdmin }) => {
 
                     {isAdmin && (
                         <div className="btn_block flex justify-center gap-2 min-w-10 items-center ">
-                            <span className="cursor-pointer">
+                            <span
+                                onClick={() =>
+                                    navigate(
+                                        `/dashboard/admin/tests/${test.id}`
+                                    )
+                                }
+                                className="cursor-pointer hover:scale-125 ease-in-out duration-300"
+                            >
                                 <FaRegPenToSquare size="20px" color="#00FA9A" />
                             </span>
-                            <span className="cursor-pointer">
+                            <span
+                                className="cursor-pointer hover:scale-125 ease-in-out duration-300"
+                                onClick={() => {
+                                    dispatch(deleteTest(test.id))
+                                        .unwrap()
+                                        .then(() => dispatch(getTest()));
+                                }}
+                            >
                                 <CgTrash size="24px" color="#D2122E" />
                             </span>
                         </div>
@@ -41,6 +57,6 @@ const AdminTestItem: FC<any> = ({ test, isAdmin }) => {
             </li>
         </>
     );
-};
+});
 
 export default AdminTestItem;

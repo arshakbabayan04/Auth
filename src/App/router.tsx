@@ -48,6 +48,10 @@ export const Router = () => {
                             path: "newtest",
                             element: <AddTest />,
                         },
+                        {
+                            path: "tests/:id",
+                            element: <StartTest isAdmin={true} />,
+                        },
                     ],
                 },
                 {
@@ -64,11 +68,10 @@ export const Router = () => {
                         },
                         {
                             path: "tests/:id",
-                            element: <StartTest />,
+                            element: <StartTest isAdmin={false} />,
                         },
                     ],
                 },
-                
             ],
         },
     ]);

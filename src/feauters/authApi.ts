@@ -60,12 +60,52 @@ export const getCategory = createAsyncThunk('user/getCategory ', async () => {
     return data.categories;
 })
 
-export const getSingleTest = createAsyncThunk('user/getSingleTest', async (id: any) => {
+export const getSingleTest = createAsyncThunk('user/getSingleTest', async (id: number | string) => {
     const { data } = await axios.get(`http://localhost:5000/test/${id}`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
         },
     })
     return data.test ;
+})
+
+export const deleteTest = createAsyncThunk('user/deleteTest', async (id: number | string) => {
+    const { data } = await axios.delete(`http://localhost:5000/admin/test/${id}`,{
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+    })
+    console.log(data);
+    return data;
+})
+
+export const deleteQuestion = createAsyncThunk('user/deleteQuestion', async (id: number | string) => {
+    const { data } = await axios.delete(`http://localhost:5000/admin/question/${id}`,{
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+    })
+    console.log(data);
+    return data;
+})
+
+export const deleteAnswer = createAsyncThunk('user/deleteAnswer', async (id: number | string) => {
+    const { data } = await axios.delete(`http://localhost:5000/admin/answer/${id}`,{
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+    })
+    console.log(data);
+    return data;
+})
+
+
+export const archiveTest = createAsyncThunk('user/archiveTest ', async (id: number | string) => {
+    const { data } = await axios.patch(`http://localhost:5000/admin/test/archive/${id}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+    })
+    return data;
 })
 

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { Formik, FieldArray, Form } from "formik";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import * as Yup from "yup";
@@ -21,7 +21,7 @@ const AddTest: FC = React.memo(() => {
 
     const { categories } = useAppSelector((state) => state.user);
 
-    const submitFunc = (values: TestForm, { resetForm }: any) => {
+    const submitFunc = useCallback((values: TestForm, { resetForm }: any) => {
         console.log(values);
 
         dispatch(addTest(values))
@@ -37,7 +37,7 @@ const AddTest: FC = React.memo(() => {
             );
 
         resetForm();
-    };
+    }, []);
 
     return (
         <>
@@ -53,6 +53,17 @@ const AddTest: FC = React.memo(() => {
                         initialValues={initialValues}
                         validationSchema={Yup.object({
                             name: Yup.string().required(),
+                            category: Yup.string().required(),
+                            questions: Yup.array().of(
+                                Yup.object().shape({
+                                    question: Yup.string().required(),
+                                    answers: Yup.array().of(
+                                        Yup.object().shape({
+                                            answer: Yup.string().required(),
+                                        })
+                                    ),
+                                })
+                            ),
                         })}
                         onSubmit={submitFunc}
                     >
@@ -107,9 +118,9 @@ const AddTest: FC = React.memo(() => {
                                             name="category"
                                             value={values.category}
                                             onChange={handleChange}
-                                            onBlur={handleBlur}
                                             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                                         >
+                                            <option value=""></option>
                                             {categories.map((item) => {
                                                 return (
                                                     <option
@@ -121,6 +132,12 @@ const AddTest: FC = React.memo(() => {
                                                 );
                                             })}
                                         </select>
+                                        {errors.category &&
+                                            touched.category && (
+                                                <p className="text-red-700">
+                                                    {errors.category}
+                                                </p>
+                                            )}
                                     </div>
                                 </div>
                                 <FieldArray name="questions">
@@ -147,6 +164,12 @@ const AddTest: FC = React.memo(() => {
                                                                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                                                                 placeholder="Question"
                                                             />
+                                                            {errors.questions &&
+                                                                touched.questions && (
+                                                                    <p className="text-red-700">
+                                                                        Required
+                                                                    </p>
+                                                                )}
                                                             <FieldArray
                                                                 name={`questions[${i}].answers`}
                                                             >
@@ -210,6 +233,12 @@ const AddTest: FC = React.memo(() => {
                                                                                             );
                                                                                         }}
                                                                                     />
+                                                                                    {errors.questions &&
+                                                                                        touched.questions && (
+                                                                                            <p className="text-red-700">
+                                                                                                Required
+                                                                                            </p>
+                                                                                        )}
                                                                                 </div>
                                                                             )
                                                                         )}
@@ -239,12 +268,6 @@ const AddTest: FC = React.memo(() => {
                                                                         >
                                                                             +
                                                                         </button>
-                                                                        {errors.questions &&
-                                                                            touched.questions && (
-                                                                                <p className="text-red-700">
-                                                                                    Error
-                                                                                </p>
-                                                                            )}
                                                                     </div>
                                                                 )}
                                                             </FieldArray>

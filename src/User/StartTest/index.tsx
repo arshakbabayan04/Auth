@@ -1,16 +1,21 @@
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { getSingleTest } from "../../feauters/authApi";
+import { FC, useEffect, useState } from "react";
+import {
+    deleteAnswer,
+    deleteQuestion,
+    getSingleTest,
+} from "../../feauters/authApi";
+import { CgTrash } from "react-icons/cg";
 
-const StartTest = () => {
+const StartTest: FC<any> = ({ isAdmin }) => {
     const { id } = useParams();
     const dispatch = useAppDispatch();
     const [activeClass, setActiveClass] = useState<any>("");
     const [activeQuestion, setActiveQuestion] = useState<any>([]);
 
     useEffect(() => {
-        dispatch(getSingleTest(id));
+        id && dispatch(getSingleTest(id));
     }, []);
 
     const { singleTest } = useAppSelector((state) => state.user);
@@ -35,11 +40,43 @@ const StartTest = () => {
                                 key={i}
                                 className="user_wrapper bg-slate-600 p-5 mx-auto mt-10 rounded-xl shadow-md shadow-indigo-700 w-1/2"
                             >
-                                <h1 className="text-white text-left fs-2 font-bold text-4xl">
-                                    {el.question}
-                                </h1>
+                                <div className="headeling_wrapper flex items-center">
+                                    <h1 className="text-white text-left fs-2 font-bold text-4xl">
+                                        {el.question}
+                                    </h1>
 
-                                <div className="answers_wrapper my-4 space-y-3 cursor-pointer">
+                                    {isAdmin && (
+                                        <span
+                                            onClick={() => {
+                                                if (
+                                                    singleTest.questions
+                                                        .length > 1
+                                                ) {
+                                                    dispatch(
+                                                        deleteQuestion(el.id)
+                                                    )
+                                                        .unwrap()
+                                                        .then(() => {
+                                                            id &&
+                                                                dispatch(
+                                                                    getSingleTest(
+                                                                        id
+                                                                    )
+                                                                );
+                                                        });
+                                                }
+                                            }}
+                                            className="mt-3 ml-2 cursor-pointer hover:scale-150 ease-in-out duration-300"
+                                        >
+                                            <CgTrash
+                                                size="24px"
+                                                color="#D2122E"
+                                            />
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="answers_wrapper my-4 space-y-3 cursor-pointer ">
                                     {el.answers &&
                                         el.answers.map((item, i) => (
                                             <div
@@ -64,11 +101,48 @@ const StartTest = () => {
                                                     activeClass.includes(
                                                         item.questionId
                                                     ) && activeClass
-                                                } flex items-center gap-2 flex-wrap overflow-hidden w-full hover:bg-fuchsia-400 p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow`}
+                                                } flex items-center gap-2 flex-wrap overflow-hidden w-full hover:bg-fuchsia-400 p-3 duration-500 text-base font-bold text-gray-900 rounded-lg bg-gray-50 group hover:shadow`}
                                             >
-                                                <span className=" flex-1 text-black whitespace-nowrap">
-                                                    {item.answer}
-                                                </span>
+                                                <div className="ans_wrapper flex items-center justify-between w-full ">
+                                                    <span className=" flex-1 text-black whitespace-nowrap">
+                                                        {item.answer}
+                                                    </span>
+
+                                                    {isAdmin && (
+                                                        <span
+                                                            onClick={() => {
+                                                                if (
+                                                                    el.answers
+                                                                        .length >
+                                                                    2
+                                                                ) {
+                                                                    dispatch(
+                                                                        deleteAnswer(
+                                                                            item.id
+                                                                        )
+                                                                    )
+                                                                        .unwrap()
+                                                                        .then(
+                                                                            () => {
+                                                                                id &&
+                                                                                    dispatch(
+                                                                                        getSingleTest(
+                                                                                            id
+                                                                                        )
+                                                                                    );
+                                                                            }
+                                                                        );
+                                                                }
+                                                            }}
+                                                            className="cursor-pointer hover:scale-125 ease-in-out duration-300"
+                                                        >
+                                                            <CgTrash
+                                                                size="24px"
+                                                                color="#D2122E"
+                                                            />
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))}
                                 </div>
