@@ -1,24 +1,98 @@
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useParams } from "react-router-dom";
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import {
+    addTestResult,
     deleteAnswer,
     deleteQuestion,
     getSingleTest,
 } from "../../feauters/authApi";
 import { CgTrash } from "react-icons/cg";
+import { Answer, Question } from "../../types";
+import Swal from "sweetalert2";
 
-const StartTest: FC<any> = ({ isAdmin }) => {
+const StartTest: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
     const { id } = useParams();
     const dispatch = useAppDispatch();
-    const [activeClass, setActiveClass] = useState<any>("");
-    const [activeQuestion, setActiveQuestion] = useState<any>([]);
+    const [answersArray, setAnswersArray] = useState<AnswerArr[]>([]);
+
+    interface AnswerArr {
+        questionId: number | string;
+        answerId: number | string;
+    }
 
     useEffect(() => {
         id && dispatch(getSingleTest(id));
     }, []);
 
     const { singleTest } = useAppSelector((state) => state.user);
+
+    const onDeleteQuestion = useCallback((el: Question) => {
+        if (singleTest.questions.length > 1) {
+            dispatch(deleteQuestion(el.id))
+                .unwrap()
+                .then(() => {
+                    id && dispatch(getSingleTest(id));
+                });
+        }
+    }, []);
+
+    const onDeleteAnswer = useCallback((el: Question, item: Answer) => {
+        if (el.answers.length > 2) {
+            dispatch(deleteAnswer(item.id))
+                .unwrap()
+                .then(() => {
+                    id && dispatch(getSingleTest(id));
+                });
+        }
+    }, []);
+
+    const setAnswer = useCallback(
+        (questionId: number | string, answerId: number | string) => {
+            const newObj = {
+                questionId,
+                answerId,
+            };
+
+            setAnswersArray((answersArray) => {
+                const newArray = answersArray.filter((itm: AnswerArr) => {
+                    return itm.questionId !== questionId;
+                });
+                return [...newArray, newObj];
+            });
+        },
+        []
+    );
+
+    const onAnswerSelect = useCallback((item: any) => {
+        setAnswer(item.questionId, item.id);
+    }, []);
+
+    const onFinishTest = () => {
+        Swal.fire({
+            title: "Do you want to finish test?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Finish",
+            denyButtonText: `Don't Finish`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                const newObj = {
+                    testId: singleTest.id,
+                    questions: answersArray,
+                };
+
+                dispatch(addTestResult(newObj))
+                    .unwrap()
+                    .then(() => {
+                        Swal.fire("Saved!", "", "success");
+                    });
+            } else if (result.isDenied) {
+                Swal.fire("Changes are not saved", "", "info");
+            }
+        });
+    };
 
     return (
         <>
@@ -47,25 +121,7 @@ const StartTest: FC<any> = ({ isAdmin }) => {
 
                                     {isAdmin && (
                                         <span
-                                            onClick={() => {
-                                                if (
-                                                    singleTest.questions
-                                                        .length > 1
-                                                ) {
-                                                    dispatch(
-                                                        deleteQuestion(el.id)
-                                                    )
-                                                        .unwrap()
-                                                        .then(() => {
-                                                            id &&
-                                                                dispatch(
-                                                                    getSingleTest(
-                                                                        id
-                                                                    )
-                                                                );
-                                                        });
-                                                }
-                                            }}
+                                            onClick={() => onDeleteQuestion(el)}
                                             className="mt-3 ml-2 cursor-pointer hover:scale-150 ease-in-out duration-300"
                                         >
                                             <CgTrash
@@ -76,31 +132,23 @@ const StartTest: FC<any> = ({ isAdmin }) => {
                                     )}
                                 </div>
 
-                                <div className="answers_wrapper my-4 space-y-3 cursor-pointer ">
+                                <div className="answers_wrapper my-4 space-y-3 cursor-pointer">
                                     {el.answers &&
                                         el.answers.map((item, i) => (
                                             <div
-                                                onClick={(e) => {
-                                                    setActiveQuestion([
-                                                        ...activeQuestion,
-                                                        el.id,
-                                                    ]);
-                                                    if (item.status === 1) {
-                                                        setActiveClass(
-                                                            "bg-green-400"
-                                                        );
-                                                    } else {
-                                                        setActiveClass(
-                                                            "bg-red-500"
-                                                        );
-                                                    }
-                                                }}
+                                                onClick={() =>
+                                                    onAnswerSelect(item)
+                                                }
                                                 key={i}
                                                 id="block"
                                                 className={`${
-                                                    activeClass.includes(
-                                                        item.questionId
-                                                    ) && activeClass
+                                                    answersArray.some(
+                                                        (elm) =>
+                                                            elm.answerId ==
+                                                            item.id
+                                                    )
+                                                        ? "bg-green-400"
+                                                        : ""
                                                 } flex items-center gap-2 flex-wrap overflow-hidden w-full hover:bg-fuchsia-400 p-3 duration-500 text-base font-bold text-gray-900 rounded-lg bg-gray-50 group hover:shadow`}
                                             >
                                                 <div className="ans_wrapper flex items-center justify-between w-full ">
@@ -110,30 +158,12 @@ const StartTest: FC<any> = ({ isAdmin }) => {
 
                                                     {isAdmin && (
                                                         <span
-                                                            onClick={() => {
-                                                                if (
-                                                                    el.answers
-                                                                        .length >
-                                                                    2
-                                                                ) {
-                                                                    dispatch(
-                                                                        deleteAnswer(
-                                                                            item.id
-                                                                        )
-                                                                    )
-                                                                        .unwrap()
-                                                                        .then(
-                                                                            () => {
-                                                                                id &&
-                                                                                    dispatch(
-                                                                                        getSingleTest(
-                                                                                            id
-                                                                                        )
-                                                                                    );
-                                                                            }
-                                                                        );
-                                                                }
-                                                            }}
+                                                            onClick={() =>
+                                                                onDeleteAnswer(
+                                                                    el,
+                                                                    item
+                                                                )
+                                                            }
                                                             className="cursor-pointer hover:scale-125 ease-in-out duration-300"
                                                         >
                                                             <CgTrash
@@ -148,6 +178,15 @@ const StartTest: FC<any> = ({ isAdmin }) => {
                                 </div>
                             </div>
                         ))}
+
+                    {!isAdmin ? (
+                        <button
+                            onClick={() => onFinishTest()}
+                            className="block bg-green-500 mx-auto mt-10 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-green-700 hover:border-blue-500 rounded"
+                        >
+                            Finish Test
+                        </button>
+                    ) : null}
                 </div>
             </div>
         </>

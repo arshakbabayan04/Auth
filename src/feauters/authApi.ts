@@ -109,3 +109,13 @@ export const archiveTest = createAsyncThunk('user/archiveTest ', async (id: numb
     return data;
 })
 
+export const addTestResult = createAsyncThunk('user/addTestResult ', async (newData: any) => {
+    const { data } = await axios.post(`http://localhost:5000/user/test`, newData,{
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+    })
+    console.log(data);
+    return data;
+})
+
