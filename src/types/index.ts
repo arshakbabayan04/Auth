@@ -35,3 +35,13 @@ export interface User {
     email: string;
     password: string;
 }
+
+export interface AnswerArr {
+    questionId: number | string;
+    answerId: number | string;
+}
+
+export interface FinishTest {
+    testId: number;
+    questions: AnswerArr[];
+}

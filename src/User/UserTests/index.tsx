@@ -1,13 +1,13 @@
 import React, { FC, useEffect } from "react";
 import AdminTestItem from "../../Admin/AdminTestItem";
-import { getTest } from "../../feauters/authApi";
+import { getTest, userTest } from "../../feauters/authApi";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 const UserTests: FC = React.memo(() => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(getTest());
+        dispatch(userTest());
     }, []);
 
     const { tests } = useAppSelector((state) => state.user);
