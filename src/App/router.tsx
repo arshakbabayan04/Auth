@@ -3,6 +3,7 @@ import { Admin } from "../Admin";
 import AddTest from "../Admin/AddTest";
 import { AdminLayout } from "../Admin/AdminLayout";
 import AdminTest from "../Admin/AdminTest";
+import AdminTestUsers from "../Admin/AdminTestUsers";
 import Header from "../Header/Header";
 import PrivateRoute from "../PrivateRoute";
 import SignIn from "../SignIn/SignIn";
@@ -51,6 +52,10 @@ export const Router = () => {
                         {
                             path: "tests/:id",
                             element: <StartTest isAdmin={true} />,
+                        },
+                        {
+                            path: "tests/test-users/:id",
+                            element: <AdminTestUsers />,
                         },
                     ],
                 },

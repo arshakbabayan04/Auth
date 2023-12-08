@@ -1,4 +1,4 @@
-import { Category } from "./../types/index";
+import { Category, SingleTest } from "./../types/index";
 import {
     getUser,
     signUp,
@@ -15,14 +15,14 @@ interface userState {
     user: User;
     tests: Test[];
     categories: Category[];
-    singleTest: Test;
+    singleTest: SingleTest;
 }
 
 const initialState: userState = {
     user: {} as User,
     tests: [],
     categories: [],
-    singleTest: {} as Test,
+    singleTest: {} as SingleTest,
 };
 
 const userSlice = createSlice({

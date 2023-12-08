@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import { CgTrash } from "react-icons/cg";
 import { FaRegPenToSquare } from "react-icons/fa6";
+import { FaUser } from "react-icons/fa";
 import { IoIosArchive } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { archiveTest, deleteTest, getTest } from "../../feauters/authApi";
@@ -32,6 +33,16 @@ const AdminTestItem: FC<any> = React.memo(({ test, isAdmin }) => {
 
                     {isAdmin && (
                         <div className="btn_block flex justify-center gap-2 min-w-10 items-center ">
+                            <span
+                                className="cursor-pointer hover:scale-125 ease-in-out duration-300 mt-px mr-px"
+                                onClick={() => {
+                                    navigate(
+                                        `/dashboard/admin/tests/test-users/${test.id}`
+                                    );
+                                }}
+                            >
+                                <FaUser size="18px" color="black" />
+                            </span>
                             <span
                                 className="cursor-pointer hover:scale-125 ease-in-out duration-300 mt-px mr-px"
                                 onClick={() => {

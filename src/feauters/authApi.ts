@@ -150,7 +150,6 @@ export const addTestResult = createAsyncThunk(
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
         });
-        console.log(data);
         return data;
     }
 );
